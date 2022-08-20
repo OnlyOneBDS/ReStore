@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,6 +13,8 @@ namespace ReStore.Svc
 {
   public class Startup
   {
+    private readonly string AllowAllPolicy = "_allowAllPolicy";
+
     public IConfiguration Configuration { get; }
 
     public Startup(IConfiguration configuration)
@@ -22,6 +25,17 @@ namespace ReStore.Svc
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+      services.AddCors(options =>
+      {
+        options.AddPolicy(name: AllowAllPolicy, policy =>
+        {
+          policy.WithOrigins("http://localhost:3000")
+                .AllowCredentials()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+      });
+
       services.AddControllers();
 
       services.AddSwaggerGen(c =>
@@ -33,8 +47,6 @@ namespace ReStore.Svc
       {
         options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
       });
-
-      services.AddCors();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,12 +64,15 @@ namespace ReStore.Svc
 
       app.UseRouting();
 
-      app.UseCors(options =>
-      {
-        options.AllowAnyHeader()
-               .AllowAnyMethod()
-               .WithOrigins("http://localhost:3000");
-      });
+      // app.UseCors(options =>
+      // {
+      //   options.AllowAnyHeader()
+      //          .AllowAnyMethod()
+      //          .AllowCredentials()
+      //          .WithOrigins("http://localhost:3000");
+      // });
+
+      app.UseCors(AllowAllPolicy);
 
       app.UseAuthorization();
 
