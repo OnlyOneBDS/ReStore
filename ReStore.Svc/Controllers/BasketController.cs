@@ -28,7 +28,7 @@ namespace ReStore.Svc.Controllers
     }
 
     [HttpPost]
-    public async Task<ActionResult> AddItemToBasket(int productId, int quantity)
+    public async Task<ActionResult<BasketDto>> AddItemToBasket(int productId, int quantity)
     {
       // Get basket
       var basket = await RetrieveBasket();
@@ -44,7 +44,7 @@ namespace ReStore.Svc.Controllers
 
       if (product == null)
       {
-        return NotFound();
+        return BadRequest(new ProblemDetails { Title = "Product Not Found" });
       }
 
       // Add item and quantity
