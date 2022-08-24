@@ -1,9 +1,11 @@
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReStore.Svc.Data;
 using ReStore.Svc.Entities;
+using ReStore.Svc.Extensions;
+using ReStore.Svc.RequestHelpers;
 
 namespace ReStore.Svc.Controllers
 {
@@ -17,9 +19,19 @@ namespace ReStore.Svc.Controllers
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Product>>> GetProducts()
+    public async Task<ActionResult<PagedList<Product>>> GetProducts([FromQuery] ProductParams productParams)
     {
-      return await _context.Products.ToListAsync();
+      var query = _context.Products
+                          .Sort(productParams.OrderBy)
+                          .Search(productParams.SearchTerm)
+                          .Filter(productParams.Brands, productParams.Types)
+                          .AsQueryable();
+
+      var products = await PagedList<Product>.ToPagedList(query, productParams.PageNumber, productParams.PageSize);
+
+      Response.AddPaginationHeader(products.MetaData);
+
+      return products;
     }
 
     [HttpGet("{id}")]
@@ -33,6 +45,15 @@ namespace ReStore.Svc.Controllers
       }
 
       return product;
+    }
+
+    [HttpGet("filters")]
+    public async Task<IActionResult> GetFilters()
+    {
+      var brands = await _context.Products.Select(p => p.Brand).Distinct().ToListAsync();
+      var types = await _context.Products.Select(p => p.Type).Distinct().ToListAsync();
+
+      return Ok(new { brands, types });
     }
   }
 }
