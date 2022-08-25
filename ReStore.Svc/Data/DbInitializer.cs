@@ -1,15 +1,36 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using ReStore.Svc.Entities;
 
 namespace ReStore.Svc.Data
 {
   public static class DbInitializer
   {
-    public static void Initialize(StoreContext context)
+    public static async Task Initialize(StoreContext context, UserManager<User> userManager)
     {
+      if (!userManager.Users.Any())
+      {
+        var admin = new User
+        {
+          UserName = "admin",
+          Email = "admin@test.com"
+        };
+
+        await userManager.CreateAsync(admin, "Pa$$w0rd");
+        await userManager.AddToRolesAsync(admin, new[] { "Admin", "Member" });
+
+        var user = new User
+        {
+          UserName = "bob",
+          Email = "bob@test.com"
+        };
+
+        await userManager.CreateAsync(user, "Pa$$w0rd");
+        await userManager.AddToRoleAsync(user, "Member");
+      }
+
       if (context.Products.Any())
       {
         return;
