@@ -16,6 +16,7 @@ import ProductDetails from "../../features/catalog/ProductDetails";
 import CheckoutPage from "../../features/checkout/CheckoutPage";
 import ContactPage from "../../features/contact/ContactPage";
 import HomePage from "../../features/home/HomePage";
+import Orders from "../../features/orders/Orders";
 import NotFound from "../errors/NotFound";
 import ServerError from "../errors/ServerError";
 import { useAppDispatch } from "../store/configureStore";
@@ -76,6 +77,7 @@ function App() {
           <PrivateRoute path="/checkout" component={CheckoutPage} />
           <Route path="/contact" component={ContactPage} />
           <Route path="/login" component={Login} />
+          <PrivateRoute path="/orders" component={Orders} />
           <Route path="/register" component={Register} />
           <Route path="/server-error" component={ServerError} />
           <Route component={NotFound} />

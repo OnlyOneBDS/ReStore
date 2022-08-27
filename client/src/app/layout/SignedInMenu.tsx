@@ -3,6 +3,7 @@ import Fade from '@mui/material/Fade';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { signOut } from '../../features/account/accountSlice';
 import { clearBasket } from '../../features/basket/basketSlice';
 import { useAppDispatch, useAppSelector } from '../store/configureStore';
@@ -28,7 +29,7 @@ export default function SignedInMenu() {
       </Button>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose} TransitionComponent={Fade}>
         <MenuItem onClick={handleClose}>Profile</MenuItem>
-        <MenuItem onClick={handleClose}>My Orders</MenuItem>
+        <MenuItem onClick={handleClose} component={Link} to="/orders">My Orders</MenuItem>
         <MenuItem onClick={() => { dispatch(signOut()); dispatch(clearBasket()); }}>Logout</MenuItem>
       </Menu>
     </>
