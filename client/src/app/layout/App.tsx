@@ -13,7 +13,7 @@ import BasketPage from "../../features/basket/BasketPage";
 import { fetchBasketAsync } from "../../features/basket/basketSlice";
 import Catalog from "../../features/catalog/Catalog";
 import ProductDetails from "../../features/catalog/ProductDetails";
-import CheckoutPage from "../../features/checkout/CheckoutPage";
+import CheckoutWrapper from "../../features/checkout/CheckoutWrapper";
 import ContactPage from "../../features/contact/ContactPage";
 import HomePage from "../../features/home/HomePage";
 import Orders from "../../features/orders/Orders";
@@ -74,7 +74,7 @@ function App() {
           <Route path="/basket" component={BasketPage} />
           <Route exact path="/catalog" component={Catalog} />
           <Route path="/catalog/:id" component={ProductDetails} />
-          <PrivateRoute path="/checkout" component={CheckoutPage} />
+          <PrivateRoute path="/checkout" component={CheckoutWrapper} />
           <Route path="/contact" component={ContactPage} />
           <Route path="/login" component={Login} />
           <PrivateRoute path="/orders" component={Orders} />
