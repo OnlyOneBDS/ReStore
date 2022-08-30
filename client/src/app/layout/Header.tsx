@@ -39,7 +39,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
 
 
   return (
-    <AppBar position="static" sx={{ mb: 4 }}>
+    <AppBar position="static">
       <Toolbar sx={{ alignItems: "center", display: "flex", justifyContent: "space-between" }}>
         <Box alignItems="center" display="flex">
           <Typography component={NavLink} exact to="/" variant="h6" sx={navStyles}>RE-STORE</Typography>

@@ -67,22 +67,24 @@ function App() {
       <ToastContainer position="bottom-right" hideProgressBar theme="colored" />
       <CssBaseline />
       <Header darkMode={darkMode} handleThemeChange={handleThemeChange} />
-      <Container>
-        <Switch>
-          <Route exact path="/" component={HomePage} />
-          <Route path="/about" component={AboutPage} />
-          <Route path="/basket" component={BasketPage} />
-          <Route exact path="/catalog" component={Catalog} />
-          <Route path="/catalog/:id" component={ProductDetails} />
-          <PrivateRoute path="/checkout" component={CheckoutWrapper} />
-          <Route path="/contact" component={ContactPage} />
-          <Route path="/login" component={Login} />
-          <PrivateRoute path="/orders" component={Orders} />
-          <Route path="/register" component={Register} />
-          <Route path="/server-error" component={ServerError} />
-          <Route component={NotFound} />
-        </Switch>
-      </Container>
+      <Route exact path="/" component={HomePage} />
+      <Route path={"/(.+)"} render={() => (
+        <Container sx={{ mt: 4 }}>
+          <Switch>
+            <Route path="/about" component={AboutPage} />
+            <Route path="/basket" component={BasketPage} />
+            <Route exact path="/catalog" component={Catalog} />
+            <Route path="/catalog/:id" component={ProductDetails} />
+            <PrivateRoute path="/checkout" component={CheckoutWrapper} />
+            <Route path="/contact" component={ContactPage} />
+            <Route path="/login" component={Login} />
+            <PrivateRoute path="/orders" component={Orders} />
+            <Route path="/register" component={Register} />
+            <Route path="/server-error" component={ServerError} />
+            <Route component={NotFound} />
+          </Switch>
+        </Container>
+      )} />
     </ThemeProvider>
   );
 }

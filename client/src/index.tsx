@@ -4,6 +4,8 @@ import ReactDOM from 'react-dom';
 import { Provider } from "react-redux";
 import { Router } from 'react-router-dom';
 
+import "slick-carousel/slick/slick-theme.css";
+import "slick-carousel/slick/slick.css";
 import App from './app/layout/App';
 import './app/layout/styles.css';
 import { store } from "./app/store/configureStore";
