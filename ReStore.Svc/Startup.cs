@@ -13,6 +13,7 @@ using Microsoft.OpenApi.Models;
 using ReStore.Svc.Data;
 using ReStore.Svc.Entities;
 using ReStore.Svc.Middleware;
+using ReStore.Svc.RequestHelpers;
 using ReStore.Svc.Services;
 
 namespace ReStore.Svc
@@ -43,6 +44,8 @@ namespace ReStore.Svc
       });
 
       services.AddControllers();
+
+      services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 
       services.AddSwaggerGen(c =>
       {
@@ -130,8 +133,10 @@ namespace ReStore.Svc
               });
 
       services.AddAuthorization();
+
       services.AddScoped<TokenService>();
       services.AddScoped<PaymentService>();
+      services.AddScoped<ImageService>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

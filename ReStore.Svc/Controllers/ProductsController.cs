@@ -1,20 +1,28 @@
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReStore.Svc.Data;
+using ReStore.Svc.DTOs;
 using ReStore.Svc.Entities;
 using ReStore.Svc.Extensions;
 using ReStore.Svc.RequestHelpers;
+using ReStore.Svc.Services;
 
 namespace ReStore.Svc.Controllers
 {
   public class ProductsController : BaseApiController
   {
     private readonly StoreContext _context;
+    private readonly IMapper _mapper;
+    private readonly ImageService _imageService;
 
-    public ProductsController(StoreContext context)
+    public ProductsController(StoreContext context, IMapper mapper, ImageService imageService)
     {
+      _imageService = imageService;
+      _mapper = mapper;
       _context = context;
     }
 
@@ -34,7 +42,7 @@ namespace ReStore.Svc.Controllers
       return products;
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id}", Name = "GetProduct")]
     public async Task<ActionResult<Product>> GetProduct(int id)
     {
       var product = await _context.Products.FindAsync(id);
@@ -50,10 +58,110 @@ namespace ReStore.Svc.Controllers
     [HttpGet("filters")]
     public async Task<IActionResult> GetFilters()
     {
-      var brands = await _context.Products.Select(p => p.Brand).Distinct().ToListAsync();
-      var types = await _context.Products.Select(p => p.Type).Distinct().ToListAsync();
+      var brands = await _context.Products.Select(p => p.Brand).Distinct().OrderBy(p => p).ToListAsync();
+      var types = await _context.Products.Select(p => p.Type).Distinct().OrderBy(p => p).ToListAsync();
 
       return Ok(new { brands, types });
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    public async Task<ActionResult<Product>> CreateProduct([FromForm] CreateProductDto productDto)
+    {
+      var product = _mapper.Map<Product>(productDto);
+
+      if (productDto.File != null)
+      {
+        var imageResult = await _imageService.AddImageAsync(productDto.File);
+
+        if (imageResult.Error != null)
+        {
+          return BadRequest(new ProblemDetails { Title = imageResult.Error.Message });
+        }
+
+        product.ImageUrl = imageResult.SecureUrl.ToString();
+        product.PublicId = imageResult.PublicId;
+      }
+
+      _context.Products.Add(product);
+
+      var result = await _context.SaveChangesAsync() > 0;
+
+      if (result)
+      {
+        return CreatedAtRoute("GetProduct", new { Id = product.Id }, product);
+      }
+
+      return BadRequest(new ProblemDetails { Title = "Problem creating new product" });
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPut]
+    public async Task<ActionResult<Product>> UpdateProduct([FromForm] UpdateProductDto productDto)
+    {
+      var product = await _context.Products.FindAsync(productDto.Id);
+
+      if (product == null)
+      {
+        return NotFound();
+      }
+
+      _mapper.Map(productDto, product);
+
+      if (productDto.File != null)
+      {
+        var imageResult = await _imageService.AddImageAsync(productDto.File);
+
+        if (imageResult.Error != null)
+        {
+          return BadRequest(new ProblemDetails { Title = imageResult.Error.Message });
+        }
+
+        if (!string.IsNullOrEmpty(product.PublicId))
+        {
+          await _imageService.DeleteImageAsync(product.PublicId);
+        }
+
+        product.ImageUrl = imageResult.SecureUrl.ToString();
+        product.PublicId = imageResult.PublicId;
+      }
+
+      var result = await _context.SaveChangesAsync() > 0;
+
+      if (result)
+      {
+        return Ok(product);
+      }
+
+      return BadRequest(new ProblemDetails { Title = "Problem updating product" });
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteProduct(int id)
+    {
+      var product = await _context.Products.FindAsync(id);
+
+      if (product == null)
+      {
+        return NotFound();
+      }
+
+      if (!string.IsNullOrEmpty(product.PublicId))
+      {
+        await _imageService.DeleteImageAsync(product.PublicId);
+      }
+
+      _context.Products.Remove(product);
+
+      var result = await _context.SaveChangesAsync() > 0;
+
+      if (result)
+      {
+        return Ok();
+      }
+
+      return BadRequest(new ProblemDetails { Title = "Problem deleting product" });
     }
   }
 }
