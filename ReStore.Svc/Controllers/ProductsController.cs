@@ -1,16 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ReStore.Svc.Data;
-using ReStore.Svc.DTOs;
-using ReStore.Svc.Entities;
-using ReStore.Svc.Extensions;
-using ReStore.Svc.RequestHelpers;
-using ReStore.Svc.Services;
-
 namespace ReStore.Svc.Controllers
 {
   public class ProductsController : BaseApiController
