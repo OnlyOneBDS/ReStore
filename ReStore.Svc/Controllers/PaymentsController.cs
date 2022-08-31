@@ -1,16 +1,4 @@
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using ReStore.Svc.Data;
-using ReStore.Svc.DTOs;
-using ReStore.Svc.Entities.OrderAggregate;
-using ReStore.Svc.Extensions;
-using ReStore.Svc.Services;
 using Stripe;
-
 namespace ReStore.Svc.Controllers
 {
   [ApiController]

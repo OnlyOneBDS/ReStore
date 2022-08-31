@@ -1,13 +1,3 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ReStore.Svc.Data;
-using ReStore.Svc.DTOs;
-using ReStore.Svc.Entities;
-using ReStore.Svc.Extensions;
-
 namespace ReStore.Svc.Controllers
 {
   public class BasketController : BaseApiController

@@ -1,6 +1,3 @@
-using System;
-using Microsoft.AspNetCore.Mvc;
-
 namespace ReStore.Svc.Controllers
 {
   public class BuggyController : BaseApiController
